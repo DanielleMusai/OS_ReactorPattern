@@ -11,10 +11,14 @@ void sigHandler(int sig)
 {
     if (sig == SIGINT)
     {
-       deleteReactor(p_reactor);
+        if (p_reactor != NULL)
+        {
+            waitFor(p_reactor);
+        }
         exit(0);
     }
 }
+
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
 {
