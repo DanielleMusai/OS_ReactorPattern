@@ -37,4 +37,4 @@ Execute the server application by running the following command:
 * ./react_server
 The server will start running and listening for incoming connections on port 9034. You can now connect to the server and test its functionality. To stop the server, use CTRL+C to send an interrupt signal.
 
-<img width="836" alt="image" src="https://github.com/DanielleMusai/OS_ReactorPattern/assets/92378800/1ecbb576-5dec-4067-9ca8-ccfe8c88825c">
+<img width="835" alt="image" src="https://github.com/DanielleMusai/OS_ReactorPattern/assets/92378800/ba8e55ad-0e6e-4939-b98a-5cace12ddc84">
