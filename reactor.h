@@ -1,3 +1,4 @@
+
 #ifndef REACTOR_H
 #define REACTOR_H
 #include <poll.h>
@@ -35,7 +36,6 @@ typedef struct reactor
     int isRunning;
     int listenerFd;
     char *remoteIP;
-    bool inaction;
     pthread_t thread;
 } reactor_t, *p_reactor_t;
 
