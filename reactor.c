@@ -6,11 +6,11 @@ p_reactor_t createReactor(int size, int listenerFd)
     p_reactor_t reactor = (p_reactor_t)malloc(sizeof(reactor_t));
     reactor->handlers = (p_handler_t *)malloc(size * sizeof(p_handler_t));
     reactor->fds = (struct pollfd *)malloc(size * sizeof(struct pollfd));
-      if(reactor->handlers == NULL || reactor->fds == NULL)
-        {
-            perror("");
-            exit(1);
-        }
+    if (reactor->handlers == NULL || reactor->fds == NULL)
+    {
+        perror("");
+        exit(1);
+    }
     reactor->count = 0;
     reactor->size = size;
     reactor->isRunning = 0;
@@ -25,9 +25,7 @@ void stopReactor(p_reactor_t reactor)
         reactor->isRunning = 0;
         waitFor(reactor);
     }
- 
 }
-
 void startReactor(p_reactor_t reactor)
 {
     if (reactor->isRunning == 1)
@@ -45,9 +43,11 @@ void startReactor(p_reactor_t reactor)
 void *runReactor(void *arg)
 {
     p_reactor_t reactor = (p_reactor_t)arg;
+
     while (reactor->isRunning == 1)
     {
         int numEvents = poll(reactor->fds, reactor->count, -1);
+
         if (numEvents > 0)
         {
             for (int i = 0; i < reactor->count; i++)
@@ -59,6 +59,8 @@ void *runReactor(void *arg)
             }
         }
     }
+
+    return NULL;
 }
 
 void addFd(p_reactor_t reactor, int fd, handler_t handler)
@@ -73,26 +75,29 @@ void addFd(p_reactor_t reactor, int fd, handler_t handler)
         reactor->size *= 2;
         reactor->handlers = (p_handler_t *)realloc(reactor->handlers, reactor->size * sizeof(p_handler_t));
         reactor->fds = (struct pollfd *)realloc(reactor->fds, reactor->size * sizeof(struct pollfd));
-        if(reactor == NULL || reactor->fds == NULL)
+        if (reactor->handlers == NULL || reactor->fds == NULL)
         {
             perror("");
             exit(1);
         }
     }
-    else
-    {
-        reactor->handlers[reactor->count] = (p_handler_t)malloc(sizeof(handler_t));
-        reactor->handlers[reactor->count]->handler = handler.handler;
-        reactor->fds[reactor->count].fd = fd;
-        reactor->fds[reactor->count].events = POLLIN;
-        reactor->count++;
-    }
-}
 
+    reactor->handlers[reactor->count] = (p_handler_t)malloc(sizeof(handler_t));
+    if (reactor->handlers[reactor->count] == NULL)
+    {
+        perror("");
+        exit(1);
+    }
+
+    reactor->handlers[reactor->count]->handler = handler.handler;
+    reactor->handlers[reactor->count]->arg = handler.arg;
+    reactor->fds[reactor->count].fd = fd;
+    reactor->fds[reactor->count].events = POLLIN;
+    reactor->count++;
+}
 void waitFor(p_reactor_t reactor)
 {
-   // if (reactor && !reactor->isRunning)
-        pthread_join(reactor->thread, NULL);
+    pthread_join(reactor->thread, NULL);
 }
 
 void deleteFd(p_reactor_t reactor, int fd)
