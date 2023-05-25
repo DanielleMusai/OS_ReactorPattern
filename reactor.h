@@ -12,6 +12,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <signal.h>
+#include <stdbool.h>
 #define PORT "9034"     // Port we're listening on
 #define MAX_CLIENTS 100 // Max number of people on chat
 #define BUFF_SIZE 256   // Max buffer size
@@ -33,7 +34,7 @@ typedef struct reactor
     struct pollfd *fds;
     int count;
     int size;
-    int isRunning;
+    bool isRunning;
     int listenerFd;
     char *remoteIP;
     pthread_t thread;
