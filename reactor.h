@@ -40,14 +40,14 @@ typedef struct reactor
     pthread_t thread;
 } reactor_t, *p_reactor_t;
 
+void addFd(p_reactor_t reactor, int fd, handler_t handler);
+void deleteReactor(p_reactor_t reactor);
+void deleteFd(p_reactor_t reactor, int fd);
 p_reactor_t createReactor(int size, int listenerFd);
 void stopReactor(p_reactor_t reactor);
 void startReactor(p_reactor_t reactor);
 void *runReactor(void *arg);
-void addFd(p_reactor_t reactor, int fd, handler_t handler);
 void waitFor(p_reactor_t reactor);
-void deleteReactor(p_reactor_t reactor);
-void deleteFd(p_reactor_t reactor, int fd);
 void sigHandler(int sig);
 void *get_in_addr(struct sockaddr *sa);
 int get_listener_socket(void);
