@@ -1,38 +1,46 @@
 #include "reactor.h"
 #include <stdlib.h>
+#include <stdbool.h>
 
 p_reactor_t createReactor(int size, int listenerFd)
 {
+    
     p_reactor_t reactor = (p_reactor_t)malloc(sizeof(reactor_t));
+
+    // Allocate memory for handlers and fds
     reactor->handlers = (p_handler_t *)malloc(size * sizeof(p_handler_t));
     reactor->fds = (struct pollfd *)malloc(size * sizeof(struct pollfd));
+
+    // Check if memory allocation was successful
     if (reactor->handlers == NULL || reactor->fds == NULL)
     {
-        perror("");
+        perror("Memory allocation error");
         exit(1);
     }
+    // Initialize reactor properties
     reactor->count = 0;
     reactor->size = size;
-    reactor->isRunning = 0;
+    reactor->isRunning = false;
     reactor->listenerFd = listenerFd;
     return reactor;
 }
 
 void stopReactor(p_reactor_t reactor)
 {
-    if (reactor->isRunning == 1)
+    if (reactor->isRunning)
     {
-        reactor->isRunning = 0;
+        reactor->isRunning = false;
         waitFor(reactor);
     }
 }
+
 void startReactor(p_reactor_t reactor)
 {
-    if (reactor->isRunning == 1)
+    if (reactor->isRunning)
     {
         return;
     }
-    reactor->isRunning = 1;
+    reactor->isRunning = true;
 
     if (pthread_create(&reactor->thread, NULL, runReactor, reactor) != 0)
     {
@@ -43,12 +51,9 @@ void startReactor(p_reactor_t reactor)
 void *runReactor(void *arg)
 {
     p_reactor_t reactor = (p_reactor_t)arg;
-
-    while (reactor->isRunning == 1)
+    while (!reactor->isRunning)
     {
-        int numEvents = poll(reactor->fds, reactor->count, -1);
-
-        if (numEvents > 0)
+        if (poll(reactor->fds, reactor->count, -1) > 0)
         {
             for (int i = 0; i < reactor->count; i++)
             {
